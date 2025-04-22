@@ -1,0 +1,958 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb, amsthm, amsfonts, geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{forest}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+
+% Page Setup
+\geometry{top=1in, bottom=1in, left=1in, right=1in}
+
+\title{Dat102 Oblig5}
+\author{???}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Oppgåve 1}
+
+Vi skal lagre følgjande bilnummer med ein hash-tabell med storleik 10 og hash-funksjonen som returnerer siste siffer i bilnummeret:
+
+\begin{itemize}
+    \item EL65431 $\rightarrow$ 1
+    \item TA14374 $\rightarrow$ 4
+    \item ZX87181 $\rightarrow$ 1
+    \item EL47007 $\rightarrow$ 7
+    \item VV50000 $\rightarrow$ 0
+    \item UV14544 $\rightarrow$ 4
+    \item EL32944 $\rightarrow$ 4
+\end{itemize}
+
+\subsection*{a) Open adressering med linear probing, steglengde 1}
+
+Vi set inn i tabellen med lineær probing dersom det oppstår kollisjon:
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+Index & Bilnummer \\
+\hline
+0 & VV50000 \\
+1 & EL65431 \\
+2 & ZX87181 \\
+3 & \\
+4 & TA14374 \\
+5 & UV14544 \\
+6 & EL32944 \\
+7 & EL47007 \\
+8 & \\
+9 & \\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent 
+\textbf{Forklaring:}
+\begin{itemize}
+    \item EL65431 går til 1.
+    \item ZX87181 kolliderer med 1 $\rightarrow$ neste ledige er 2.
+    \item TA14374 går til 4.
+    \item UV14544 kolliderer med 4 $\rightarrow$ neste ledige er 5.
+    \item EL32944 kolliderer med 4, 5 $\rightarrow$ neste ledige er 6.
+\end{itemize}
+
+\subsection*{b) Kjeda lister – tabell med 10 posisjonar}
+
+\noindent
+Her lagrar vi kolliderande element i ei liste på kvar posisjon:
+
+\begin{center}
+\begin{tabular}{|c|l|}
+\hline
+Index & Bilnummer \\
+\hline
+0 & VV50000 \\
+1 & EL65431, ZX87181 \\
+2 & \\
+3 & \\
+4 & TA14374, UV14544, EL32944 \\
+5 & \\
+6 & \\
+7 & EL47007 \\
+8 & \\
+9 & \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{c) Gjennomsnittleg antal kall av \texttt{equals}-metoden}
+
+\noindent 
+\textbf{Open adressering:}
+
+\begin{itemize}
+    \item EL65431: 1 kall
+    \item ZX87181: 2 kall (kolliderer med 1, så må sjekke 1 og 2)
+    \item TA14374: 1 kall
+    \item UV14544: 2 kall (4 og 5)
+    \item EL32944: 3 kall (4, 5, 6)
+    \item EL47007: 1 kall
+    \item VV50000: 1 kall
+\end{itemize}
+
+\noindent 
+Totalt: $1 + 2 + 1 + 2 + 3 + 1 + 1 = 11$
+
+\noindent
+Gjennomsnitt: $\frac{11}{7} \approx 1.57$
+
+\textbf{Kjeda lister:}
+
+\begin{itemize}
+    \item EL65431: 1 kall
+    \item ZX87181: 2 kall (må sjekke EL65431 først)
+    \item TA14374: 1 kall
+    \item UV14544: 2 kall (må sjekke TA14374 først)
+    \item EL32944: 3 kall (må sjekke TA14374 og UV14544 først)
+    \item EL47007: 1 kall
+    \item VV50000: 1 kall
+\end{itemize}
+
+\noindent 
+Totalt: $1 + 2 + 1 + 2 + 3 + 1 + 1 = 11$
+
+\noindent
+Gjennomsnitt: $\frac{11}{7} \approx 1.57$
+
+\noindent
+\textbf{Konklusjon:} For dette datasettet og tabellstorleiken gir både 
+open adressering med lineær probing og kjeda lister same gjennomsnittleg 
+antal kall av \texttt{equals}-metoden.
+
+\subsection*{d/e) Gjennomsnittleg antal kall av \texttt{equals}-metoden ved søk etter element som \emph{ikkje} finst i tabellen}
+
+\noindent 
+Vi antar at hash-verdiane til elementa vi søker etter er uniformt fordelt 
+over dei 10 plassane i tabellen.
+
+\noindent 
+\textbf{Open adressering med lineær probing:}
+
+\noindent 
+Ved open adressering må vi lineært søke gjennom posisjonane frå hash-verdien og vidare, 
+heilt til vi finn ein tom plass (indikasjon på at elementet ikkje er i tabellen). 
+Antal kall av \texttt{equals}-metoden tilsvarar då antal utførte samanlikningar før 
+vi møter ei tom celle.
+
+\noindent 
+Ved fyllingsgrad 
+\[
+    \alpha = \frac{7}{10} = 0.7
+\]
+\[
+    \left(\frac{\text{antal element i tabellen}}{\text{antall plasser i tabellen}}\right) 
+\]
+og bruk av lineær probing er det 
+ein kjent formel for gjennomsnittleg antal samanlikningar ved \emph{mislykka} søk:
+
+\[
+C_{\text{mislykka}} = \frac{1}{2} \left( 1 + \frac{1}{1 - \alpha} \right)
+\]
+
+\noindent 
+Setter vi inn $\alpha = 0.7$:
+
+\[
+C_{\text{mislykka}} = \frac{1}{2} \left( 1 + \frac{1}{1 - 0.7} \right) = 
+\frac{1}{2} \left( 1 + \frac{1}{0.3} \right) = \frac{1}{2} (1 + 3.\overline{3}) = 
+\frac{1}{2} \cdot 4.\overline{3} \approx 2.17
+\]
+
+\noindent 
+\textbf{Svar:} Ca. 2.17 kall av \texttt{equals}-metoden i gjennomsnitt.
+
+\noindent 
+\textbf{Kjeda lister:}
+
+\noindent 
+Her er gjennomsnittleg antal kall ved mislykka søk lik den gjennomsnittlege lengda 
+på listene der ein søker, altså lik fyllingsgraden $\alpha = \frac{7}{10} = 0.7$.
+
+\noindent 
+\textbf{Svar:} Ca. 0.7 kall av \texttt{equals}-metoden i gjennomsnitt.
+
+\noindent 
+\textbf{Konklusjon:} Ved søk etter element som ikkje finst i tabellen, 
+er kjeda lister klart meir effektivt (0.7 samanlikna med 2.17 kall i snitt), 
+særleg når tabellen byrjar å bli full. Dette er ein av grunnane til at kjeda hashing 
+ofte er å føretrekke ved høg lastfaktor.
+
+\subsection*{f) Ny hash-funksjon}
+La oss definere hash-funksjonen \(\phi : \text{bilnummer} \to Z_{20}\) hvor 
+\[
+    \phi(S) = \left(\displaystyle\sum_{\substack{c\in S \\ c\in \{0,1,\dots,9\}}} 
+    int(c) \right)\mod 20
+\]
+
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Bilnummer} & \textbf{Siffer-sum} & \textbf{Hash} & \textbf{Probing} & \textbf{Plassering} \\
+\hline
+EL65431   & 19  & 19  & -         & 19 \\
+TA14374   & 19  & 19  & 19 opptatt → 0 ledig & 0 \\
+ZX87181   & 25  & 5   & -         & 5  \\
+EL47007   & 18  & 18  & -         & 18 \\
+VV50000   & 5   & 5   & 5 opptatt → 6 ledig & 6 \\
+UV14544   & 18  & 18  & 18, 19, 0 opptatt → 1 ledig & 1 \\
+EL32944   & 22  & 2   & -         & 2 \\
+\hline
+\end{tabular}
+
+\break
+\section*{Oppgave 2}
+
+\noindent 
+\textbf{a) Kvifor er metoden ikkje optimal?}
+
+\noindent 
+Metoden \texttt{skrivVerdierRek} går gjennom \emph{heile} treet, 
+uansett om delar av treet ikkje kan innehalde verdiar i det gitte intervallet. 
+Dette fører til unødvendige kall til \texttt{compareTo()} og rekursive funksjonar. 
+For eksempel: om grenseverdiane er mellom 30 og 50, men venstre subtre berre inneheld 
+verdiar under 10, er det ineffektivt å søke der.
+
+\noindent 
+\textbf{b) Forbedra metode med færre kall til \texttt{compareTo()}}
+
+\noindent 
+Ved å sjekke om det i det heile tatt er mogleg at verdiar i eit subtre ligg 
+innanfor intervallet, kan vi unngå unødvendige kall:
+
+\begin{verbatim}
+private void skrivVerdierRek(BinaerTreNode<T> t, T min, T maks) {
+    if (t != null) {
+        // Gå til venstre kun om det er mogleg å finne verdiar >= min
+        if (t.getElement().compareTo(min) > 0) {
+            skrivVerdierRek(t.getVenstre(), min, maks);
+        }
+
+        // Skriv ut element dersom det ligg innanfor intervallet
+        if (t.getElement().compareTo(min) >= 0 &&
+            t.getElement().compareTo(maks) <= 0) {
+            System.out.print(t.getElement() + " ");
+        }
+
+        // Gå til høgre kun om det er mogleg å finne verdiar <= maks
+        if (t.getElement().compareTo(maks) < 0) {
+            skrivVerdierRek(t.getHogre(), min, maks);
+        }
+    }
+}
+\end{verbatim}
+
+\noindent
+Denne versjonen unngår unødvendige søk og reduserer antall kall til 
+\texttt{compareTo()} vesentleg ved å utnytte strukturen i det binære søketreet.
+
+\break
+\section*{Oppgåve 3 – Balansering av binært søketre}
+
+\noindent
+\textbf{a) Endringar i \texttt{BinaerTreNode} for å lagre høgde}
+
+\noindent
+Vi legg til ein ny objektvariabel \texttt{hogdeU} og tilhøyrande \texttt{get}- og \texttt{set}-metodar. Vi modifiserer også konstruktøren:
+
+{\small
+\begin{verbatim}
+public class BinaerTreNode<T> {
+    private T element;
+    private BinaerTreNode<T> venstre, hogre;
+    private int hogdeU;
+
+    public BinaerTreNode(T element) {
+        this.element = element;
+        this.venstre = null;
+        this.hogre = null;
+        this.hogdeU = 1; // Eit enkelt tre har høgde 1
+    }
+
+    public int getHogdeU() {
+        return hogdeU;
+    }
+
+    public void setHogdeU(int hogdeU) {
+        this.hogdeU = hogdeU;
+    }
+
+    // Andre get-/set-metodar for venstre, hogre, og element...
+}
+\end{verbatim}
+}
+
+\noindent
+\textbf{b) Sjekk om treet er balansert}
+
+\noindent
+Eit binært tre er balansert dersom forskjellen i høgde mellom venstre og høgre undertre for kvar node er maksimalt 1. Vi antar at \texttt{hogdeU} er korrekt oppdatert i alle nodar:
+
+{\small
+\begin{verbatim}
+public boolean erBalansert(BinaerTreNode<T> node) {
+    if (node == null) return true;
+
+    int venstreH = (node.getVenstre() == null) ? 0 : node.getVenstre().getHogdeU();
+    int hogreH   = (node.getHogre() == null) ? 0 : node.getHogre().getHogdeU();
+
+    if (Math.abs(venstreH - hogreH) > 1) {
+        return false;
+    }
+
+    return erBalansert(node.getVenstre()) && erBalansert(node.getHogre());
+}
+\end{verbatim}
+}
+
+\noindent
+\textbf{c) (Frivillig) Oppdatere \texttt{hogdeU} i \texttt{leggTil}-metoden}
+
+\noindent
+Ved innsetting kan vi rekursivt oppdatere \texttt{hogdeU} slik at kvar node på vegen får oppdatert sin lokale høgde basert på barnegreinene:
+
+{\small
+\begin{verbatim}
+private BinaerTreNode<T> leggTil(BinaerTreNode<T> node, T verdi) {
+    if (node == null) {
+        return new BinaerTreNode<>(verdi);
+    }
+
+    if (verdi.compareTo(node.getElement()) < 0) {
+        node.setVenstre(leggTil(node.getVenstre(), verdi));
+    } else {
+        node.setHogre(leggTil(node.getHogre(), verdi));
+    }
+
+    int venstreH = (node.getVenstre() == null) ? 0 : node.getVenstre().getHogdeU();
+    int hogreH   = (node.getHogre() == null) ? 0 : node.getHogre().getHogdeU();
+
+    node.setHogdeU(1 + Math.max(venstreH, hogreH));
+    return node;
+}
+\end{verbatim}
+}
+
+\break
+\section*{Oppgave 4 - Hauger}
+\subsection*{a)}
+En haug er en spesiell type binærtre som tilfredsstiller to egenskaper: 
+\begin{enumerate}
+    \item Formegenskapen: Treet er komplett, dvs. alle nivåer er fyllt untatt (muligens)
+        i det siste nivået av treet hvor vi legger til noder fra venstre til høyre.
+    \item For en makshaug er hvert element mindre enn eller lik foreldren. For en minhaug
+        er hvert element større enn eller like foreldren.
+\end{enumerate}
+
+\subsection*{b)} 
+
+\noindent 
+\textbf{a[0]}
+\begin{gather*}
+\begin{forest}
+for tree={circle, draw, l=1.5cm, s sep=7mm}
+[9
+  [15
+    [7
+        [6]
+        [5]
+    ]
+    [4
+        [3]
+    ]
+  ]
+  [12
+    [2]
+    [1]
+  ]
+]
+\end{forest}
+\end{gather*}
+
+\noindent
+Vi ser at første tabellen ikke opfyller kravet til an makshaug siden \(9 < 15\).
+
+\noindent
+\textbf{b[0]}
+\begin{gather*}
+\begin{forest}
+for tree={circle, draw, l=1.5cm, s sep=7mm}
+[15
+  [12
+    [11
+        [4]
+        [8]
+    ]
+    [2
+        [1]
+    ]
+  ]
+  [10
+    [6]
+    [3]
+  ]
+]
+\end{forest}
+\end{gather*}
+Dette er tydelig en makshaug siden hver foreldrenode er større enn eller lik begge barn.
+
+\noindent
+\textbf{c[0]}
+\begin{gather*}
+\begin{forest}
+for tree={circle, draw, l=1.5cm, s sep=7mm}
+[15
+  [10
+    [8
+        [2]
+        [5]
+    ]
+    [7
+        [4]
+    ]
+  ]
+  [14
+    [13]
+    [6]
+  ]
+]
+\end{forest}
+\end{gather*}
+Dette er også tydelig en makshaug.
+
+\subsection*{c)}
+\textbf{d[0] (Start)}
+\begin{gather*}
+\begin{forest}
+for tree={circle, draw, l=1.5cm, s sep=7mm}
+[15
+  [10
+    [8
+        [2]
+        [5]
+    ]
+    [7
+        [4]
+    ]
+  ]
+  [14
+    [13]
+    [6]
+  ]
+]
+\end{forest}
+\end{gather*}
+
+\noindent 
+\textbf{i) Fjerne 15 og reorganisere til makshaug:}
+
+\begin{enumerate}
+    \item Fjern 15, erstatt med 4 (siste element).
+    \item Sammenlign 4 med barn 10 og 14. Størst av barna er 14 $\rightarrow$ bytt.
+    \item Nå står 4 under 14, sammenlign med barn 13 og 6. Bytt med 13.
+\end{enumerate}
+
+\break
+\noindent
+\textbf{Resultat-tre etter reorganisering:}
+
+\begin{gather*}
+\begin{forest}
+for tree={circle, draw, l=1.5cm, s sep=7mm}
+[14
+  [10
+    [8
+        [2]
+        [5]
+    ]
+    [7]
+  ]
+  [13
+    [4]
+    [6]
+  ]
+]
+\end{forest}
+\end{gather*}
+
+\noindent
+\textbf{ii) Sett inn nytt element 13 og reorganiser:}
+
+\begin{enumerate}
+    \item Legg 13 inn bakerst.
+    \item Forelderen til 13 er 7. 13 > 7 $\Rightarrow$ bytt.
+    \item 13 er nå barn av 10, og 13 > 10 $\Rightarrow$ bytt.
+\end{enumerate}
+
+\noindent
+\textbf{Resultat-tre:}
+
+\begin{gather*}
+\begin{forest}
+for tree={circle, draw, l=1.5cm, s sep=7mm}
+[14
+  [13
+    [8
+        [2]
+        [5]
+    ]
+    [10
+        [7]
+    ]
+  ]
+  [13
+    [4]
+    [6]
+  ]
+]
+\end{forest}
+\end{gather*}
+
+\break
+\subsection*{d) Hvordan brukes dette i sortering (Heapsort)?}
+Vi bygger først en makshaug av elementene. Deretter:
+\begin{enumerate}
+    \item Fjerner roten (maksverdi) og legger bakerst i tabellen.
+    \item Flytter siste element til roten og reorganiserer haugen.
+    \item Gjentas til alle elementer er fjernet.
+\end{enumerate}
+Resultatet blir sortert tabell i stigende rekkefølge.
+
+\subsection*{e) Lage en minimumshaug fra: \texttt{[10, 9, 8, 7, 6, 5, 4, 3, 2, 1]}}
+Begynn med treet (indeksert fra 1):
+
+\[
+\begin{tikzpicture}[level distance=1.2cm,
+  level 1/.style={sibling distance=3.5cm},
+  level 2/.style={sibling distance=2cm},
+  level 3/.style={sibling distance=1.2cm}]
+\node {10}
+  child {node {9}
+    child {node {7}
+      child {node {3}}
+      child {node {2}}}
+    child {node {6}
+      child {node {1}}}}
+  child {node {8}
+    child {node {5}}
+    child {node {4}}};
+\end{tikzpicture}
+\]
+
+\noindent
+Start reparerNed fra siste interne node (indeks $\lfloor n/2 \rfloor - 1 = 4$), 
+og gå mot roten. Ved hver rotasjon, flytt ned noden om den er større enn et barn. 
+
+\noindent
+\textbf{reparerNed(4)}
+Node 6 har barn 1. 1 < 6, så vi bytter:
+
+\[
+\begin{tikzpicture}[level distance=1.2cm,
+  level 1/.style={sibling distance=3.5cm},
+  level 2/.style={sibling distance=2cm},
+  level 3/.style={sibling distance=1.2cm}]
+\node {10}
+  child {node {9}
+    child {node {7}
+      child {node {3}}
+      child {node {2}}}
+    child {node {1}
+      child {node {6}}}}
+  child {node {8}
+    child {node {5}}
+    child {node {4}}};
+\end{tikzpicture}
+\]
+
+\noindent
+\textbf{reparerNed(3)}
+Node 7 har barn 3 og 2. Minst er 2, så bytt:
+
+\[
+\begin{tikzpicture}[level distance=1.2cm,
+  level 1/.style={sibling distance=3.5cm},
+  level 2/.style={sibling distance=2cm},
+  level 3/.style={sibling distance=1.2cm}]
+\node {10}
+  child {node {9}
+    child {node {2}
+      child {node {3}}
+      child {node {7}}}
+    child {node {1}
+      child {node {6}}}}
+  child {node {8}
+    child {node {5}}
+    child {node {4}}};
+\end{tikzpicture}
+\]
+
+\noindent
+\textbf{reparerNed(2)}
+Node 8 har barn 5 og 4. Minst er 4, så bytt:
+
+\[
+\begin{tikzpicture}[level distance=1.2cm,
+  level 1/.style={sibling distance=3.5cm},
+  level 2/.style={sibling distance=2cm},
+  level 3/.style={sibling distance=1.2cm}]
+\node {10}
+  child {node {9}
+    child {node {2}
+      child {node {3}}
+      child {node {7}}}
+    child {node {1}
+      child {node {6}}}}
+  child {node {4}
+    child {node {5}}
+    child {node {8}}};
+\end{tikzpicture}
+\]
+
+\noindent
+\textbf{reparerNed(1)}
+Node 9 har barn 2 og 1. Minst er 1, så bytt. 
+Deretter har vi \(6 < 9\), så bytt igjen
+
+\[
+\begin{tikzpicture}[level distance=1.2cm,
+  level 1/.style={sibling distance=3.5cm},
+  level 2/.style={sibling distance=2cm},
+  level 3/.style={sibling distance=1.2cm}]
+\node {10}
+  child {node {1}
+    child {node {2}
+      child {node {3}}
+      child {node {7}}}
+    child {node {6}
+      child {node {9}}}}
+  child {node {4}
+    child {node {5}}
+    child {node {8}}};
+\end{tikzpicture}
+\]
+
+\noindent
+\textbf{reparerNed(0)}
+Node 10 har barn 1 og 4. Minst er 1, så bytt.
+Deretter har 10 barn 2 og 9, vi bytter med 2. 
+Deretter har 10 barn 3 og 7 og vi bytter med 3.
+
+\[
+\begin{tikzpicture}[level distance=1.2cm,
+  level 1/.style={sibling distance=3.5cm},
+  level 2/.style={sibling distance=2cm},
+  level 3/.style={sibling distance=1.2cm}]
+\node {1}
+  child {node {2}
+    child {node {3}
+      child {node {10}}
+      child {node {7}}}
+    child {node {6}
+      child {node {9}}}}
+  child {node {4}
+    child {node {5}}
+    child {node {8}}};
+\end{tikzpicture}
+\]
+
+\noindent
+\textbf{Ferdig minimumshaug.}
+Array nå: \texttt{[1, 2, 4, 3, 6, 5, 8, 10, 9]}
+
+\break
+\section*{Oppgave 5}
+Vi ønsker å finne de $k$ minste elementene i en usortert tabell med $n$ elementer. 
+Å sortere hele tabellen gir korrekt resultat, men kan være unødvendig når $k \ll n$.
+Her modifiserer vi tre sorteringsmetoder for å løse problemet mer effektivt.
+
+\subsection*{1. Insertion Sort (modifisert)}
+
+\begin{itemize}
+  \item Sorter de første $k$ elementene med vanlig insertion sort.
+  \item For hvert av de resterende $n-k$ elementene:
+  \begin{itemize}
+    \item Hvis elementet er mindre enn det største av de $k$ sorterte, 
+    sett det inn på riktig plass i den sorterte listen og kast det største.
+  \end{itemize}
+  \item Dette opprettholder en sortert liste over de $k$ minste elementene.
+\end{itemize}
+
+\noindent
+\textbf{Tidskompleksitet:} 
+\[
+\mathcal{O}(k^2 + (n-k) \cdot k) = \mathcal{O}(nk)
+\]
+(for små $k$ er dette mye bedre enn full sortering).
+
+\subsection*{2. Selection Sort (modifisert)}
+
+\begin{itemize}
+  \item Utfør kun de første $k$ iterasjonene av selection sort:
+  \begin{itemize}
+    \item I hver iterasjon, finn det minste gjenværende elementet og 
+    flytt det til fronten.
+  \end{itemize}
+\end{itemize}
+
+\noindent
+\textbf{Tidskompleksitet:}
+\[
+\mathcal{O}(n \cdot k)
+\]
+(for små $k$ er dette effektivt; vi unngår full sortering).
+
+\subsection*{3. Heap Sort (modifisert)}
+
+\begin{itemize}
+  \item Bygg en \textbf{maks-haug} med de første $k$ elementene.
+  \item For hvert av de resterende $n-k$ elementene:
+  \begin{itemize}
+    \item Hvis elementet er mindre enn roten i haugen (det største), 
+    erstatt roten og \texttt{reparer ned} for å opprettholde haug-egenskapen.
+  \end{itemize}
+  \item Når alle elementer er behandlet, inneholder haugen de $k$ minste 
+  elementene (ikke nødvendigvis sortert).
+  \item For å få dem sortert, bruk \texttt{heap sort} på den lille haugen.
+\end{itemize}
+
+\textbf{Tidskompleksitet:}
+\[
+\mathcal{O}(k + (n-k) \cdot \log k + k \cdot \log k) = \mathcal{O}(n \log k)
+\]
+
+\section*{Oppgave 6}
+\subsection*{a)}
+Viss vi lar \(\tau\) representere et binærtree så har vi at det er balansert viss
+
+\[\forall v \in V(\tau) : |hoyde(v.venstre) - hoyde(v.hoyre)| \leq 1\]
+
+\noindent 
+Med andre ord, for hver node i treet må høydeforskjellen mellom venstre og høyre undertre 
+være mindre enn eller lik 1.
+
+\subsection*{b)}
+Rotnoden har venstre undertre med 2 mer dybde enn høyre undertre. 
+Når vi gjør en høyrerotasjon om rotnoden får vi dette treet: 
+\[
+\begin{tikzpicture}[level distance=1.2cm,
+  level 1/.style={sibling distance=3.5cm},
+  level 2/.style={sibling distance=2cm},
+  level 3/.style={sibling distance=1.2cm}]
+\node {8}
+  child {node {5}
+    child {node {1}}
+    child {node {7}}
+    }
+  child {node {17}
+    child {node {30}}
+    child {node {11}}
+    };
+\end{tikzpicture}
+\]
+
+\subsection*{c)}
+Treet er ubalansert fordi node 30 har venstre undertree med dybde 0 og høyre undertree 
+med dybde 2. 
+Vi roterer 30 til venstre for å opnå: 
+\[
+\begin{tikzpicture}[level distance=1.2cm,
+  level 1/.style={sibling distance=3.5cm},
+  level 2/.style={sibling distance=2cm},
+  level 3/.style={sibling distance=1.2cm}]
+\node {17}
+  child {node {8}
+    child {node {3}}
+    }
+  child {node {30}
+    child {node {40}}
+    child {node {45}}
+    };
+\end{tikzpicture}
+\]
+
+\subsection*{d)}
+Hvis et BS-tre er balansert er det \(\mathcal O (\log n)\) for 
+instetting, sletting og søk. Viss vi lar treet degenerere 
+går det imot å være en lenket liste som er \(\mathcal O (n)\) for 
+de samme operasjonene.
+
+\section*{Oppgave 7}
+\subsection*{a)}
+Vi setter inn \(\left[20,50,30,5,40,80,17\right]\) i et 2-3 tre i den gitte rekkefølgen.
+Dette resulterer i følgene tre:
+\[
+\begin{tikzpicture}[level distance=1.2cm,
+  level 1/.style={sibling distance=3.5cm},
+  level 2/.style={sibling distance=2cm},
+  level 3/.style={sibling distance=1.2cm}]
+\node {30}
+  child {node {17}
+    child {node {5}}
+    child {node {20}}
+    }
+  child {node {50}
+    child {node {40}}
+    child {node {80}}
+    };
+\end{tikzpicture}
+\]
+
+\subsection*{b)}
+\begin{enumerate}
+    \item Ingen noder har nøyaktig ett barn: \textbf{sant}
+    \item Treet inneholder maksimalt en 3-node: \textbf{usant}
+    \item Alle blad er på samme nivå: \textbf{sant}
+    \item Dersom treet bare inneholder 2-noder, 
+        så vil det tilsvare et balansert BS-tre: \textbf{usant}
+    \item Alle 3-noder må være blad: \textbf{usant}
+\end{enumerate}
+
+\section*{Oppgave 8}
+\subsection*{a)}
+Viss vi antar at vi velger noder med lavest numerisk verdi først blir det: 
+\begin{enumerate}
+    \item 9
+    \item 6 
+    \item 3 
+    \item 1 
+    \item 2 
+    \item 4 
+    \item 5 
+    \item 7 
+    \item 8 
+\end{enumerate}
+Her starter vi i roten og velger den laveste verdi noden som ikke er besøkt. 
+Vi legger den laveste verdi ubesøkte noden på en stack (uten duplikat) 
+og besøker den. 
+
+\subsection*{b)}
+Viss vi igjen antar at vi prioriterer tilgjengelige noder med lavest numerisk verdi 
+blir det: 
+\begin{enumerate}
+    \item 1
+    \item 2 
+    \item 3 
+    \item 4 
+    \item 5 
+    \item 6 
+    \item 7 
+    \item 8 
+    \item 9 
+\end{enumerate}
+Viss vi heller antar at vi prioriterer tilgjengelige noder med høyest 
+numerisk verdi blir det: 
+\begin{enumerate}
+    \item 1
+    \item 4 
+    \item 3 
+    \item 2 
+    \item 6 
+    \item 5 
+    \item 8 
+    \item 9 
+    \item 7 
+\end{enumerate}
+
+\subsection*{c)}
+Vi ønsker å finne en topologisk ordning av nodene i grafen under ved hjelp av algoritmen fra boka/forelesningen.
+
+Grafen inneholder følgende kanter:
+
+\[
+1 \to 2, \quad 1 \to 3, \quad 2 \to 4, \quad 3 \to 2, \quad 3 \to 4, \quad 4 \to 5, \quad 6 \to 5, \quad 6 \to 7, \quad 7 \to 5
+\]
+
+\noindent
+For å finne en topologisk ordning, kan vi bruke Kahn's algoritme (BFS-metoden), 
+som er en iterativ metode som fjerner noder med in-degree lik 0 og reduserer 
+in-degrees for tilknyttede noder. Prosessen kan deles opp i følgende trinn:
+
+\begin{enumerate}
+    \item Beregn in-degree for hver node.
+    \item Start med de nodene som har in-degree lik 0 (dvs. noder uten innkommende kanter).
+    \item Legg nodene med in-degree lik 0 i en kø.
+    \item Mens køen ikke er tom:
+    \begin{itemize}
+        \item Fjern noden fra køen og legg den til i den topologiske ordningen.
+        \item Reduser in-degree for alle naboene til noden som er fjernet.
+        \item Hvis en nabonode får in-degree lik 0, legg den til i køen.
+    \end{itemize}
+    \item Hvis alle nodene er behandlet, har vi funnet en topologisk ordning. Hvis det er noen noder igjen med in-degree større enn 0, betyr det at grafen inneholder en syklus, og en topologisk ordning er ikke mulig.
+\end{enumerate}
+
+\textbf{In-degree for hver node:}
+\[
+    \text{In-degree}(1) = 0, \quad \text{In-degree}(2) = 2, 
+    \quad \text{In-degree}(3) = 1, \quad \text{In-degree}(4) = 2, 
+\]
+\[
+    \text{In-degree}(5) = 3,
+    \quad \text{In-degree}(6) = 0, \quad \text{In-degree}(7) = 1
+\]
+
+\textbf{Start med noder med in-degree 0:} \(1, 6\)
+
+\textbf{Kø:} \( \{ 1, 6 \} \)
+
+\textbf{Behandling:}
+\begin{itemize}
+    \item Fjern node 1, legg den til i topologisk ordning.
+    \item Reduser in-degree for \(2\) og \(3\).
+    \item Nå har vi \(2\) og \(3\) i køen.
+    \item Fjern node 3, legg den til i topologisk ordning.
+    \item Reduser in-degree for \(2\) og \(4\).
+    \item Nå har vi \(2\) og \(4\) i køen.
+    \item Fjern node 2, legg den til i topologisk ordning.
+    \item Reduser in-degree for \(4\).
+    \item Nå har vi \(4\) i køen.
+    \item Fjern node 4, legg den til i topologisk ordning.
+    \item Reduser in-degree for \(5\).
+    \item Nå har vi \(6\) og \(7\) i køen.
+    \item Fjern node 6, legg den til i topologisk ordning.
+    \item Reduser in-degree for \(5\) og \(7\).
+    \item Nå har vi \(7\) i køen.
+    \item Fjern node 7, legg den til i topologisk ordning.
+    \item Reduser in-degree for \(5\).
+    \item Nå har vi \(5\) i køen.
+    \item Fjern node 5, legg den til i topologisk ordning.
+\end{itemize}
+
+\noindent
+\textbf{Topologisk ordning:} \(1, 3, 2, 4, 6, 7, 5\)
+
+\section*{Oppgave d)}
+
+For å modifisere algoritmen slik at den gir en melding om hvorvidt en topologisk ordning finnes eller ikke, kan vi endre prosessen som følger:
+
+\begin{enumerate}
+    \item Beregn in-degree for hver node.
+    \item Start med de nodene som har in-degree lik 0 (dvs. noder uten innkommende kanter).
+    \item Legg nodene med in-degree lik 0 i en kø.
+    \item Mens køen ikke er tom:
+    \begin{itemize}
+        \item Fjern noden fra køen og legg den til i den topologiske ordningen.
+        \item Reduser in-degree for alle naboene til noden som er fjernet.
+        \item Hvis en nabonode får in-degree lik 0, legg den til i køen.
+    \end{itemize}
+    \item Hvis alle nodene er behandlet og ingen noder er igjen med in-degree større enn 0, har vi funnet en topologisk ordning.
+    \item Hvis det er noen noder igjen med in-degree større enn 0, betyr det at grafen inneholder en syklus, og en topologisk ordning er ikke mulig. Da skal algoritmen gi en melding om at det ikke finnes en topologisk ordning.
+\end{enumerate}
+
+\end{document}
