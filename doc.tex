@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{forest}
+\usepackage{booktabs}
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
 \newtheorem{proposition}{Proposition}
@@ -937,7 +938,7 @@ in-degrees for tilknyttede noder. Prosessen kan deles opp i følgende trinn:
 \noindent
 \textbf{Topologisk ordning:} \(1, 3, 2, 4, 6, 7, 5\)
 
-\section*{Oppgave d)}
+\subsection*{d)}
 
 For å modifisere algoritmen slik at den gir en melding om hvorvidt en topologisk ordning finnes eller ikke, kan vi endre prosessen som følger:
 
@@ -954,5 +955,14 @@ For å modifisere algoritmen slik at den gir en melding om hvorvidt en topologis
     \item Hvis alle nodene er behandlet og ingen noder er igjen med in-degree større enn 0, har vi funnet en topologisk ordning.
     \item Hvis det er noen noder igjen med in-degree større enn 0, betyr det at grafen inneholder en syklus, og en topologisk ordning er ikke mulig. Da skal algoritmen gi en melding om at det ikke finnes en topologisk ordning.
 \end{enumerate}
+
+\break
+\subsection*{e)}
+Ved hver node ser vi på avstanden til alle tilgjengelige noder som ikke er besøkte 
+og velger den med minst vekt og noterer at den er besøkt. 
+Ved bruk av denne algoritmen har vi at den minimale avstanden fra 
+A til H er 7 \(\left(A\to B \to C \to H\right)\)
+
+
 
 \end{document}
