@@ -17,7 +17,7 @@
 
 \title{Dat102 Oblig5}
 \author{???}
-\date{\today}
+\date{April 22, 2025}
 
 \begin{document}
 
@@ -714,6 +714,16 @@ Her modifiserer vi tre sorteringsmetoder for å løse problemet mer effektivt.
 
 \noindent
 \textbf{Tidskompleksitet:}
+Den generelle formellen blir 
+\[ 
+    (n-1) + (n-2) + \cdots + (n-k) = \displaystyle\sum_{i=1}^{k}(n-i) 
+\]
+\[ 
+    nk + \displaystyle\sum_{i=1}^{k}i = nk + \frac{k^2 + k}{2}
+\]
+Vi ser at for \(k=n\) blir tidskompleksiteten 
+\(\mathcal O (n^2) = \mathcal O(k^2)\), men for gode valg av k 
+får vi:
 \[
 \mathcal{O}(n \cdot k)
 \]
@@ -730,13 +740,18 @@ Her modifiserer vi tre sorteringsmetoder for å løse problemet mer effektivt.
   \end{itemize}
   \item Når alle elementer er behandlet, inneholder haugen de $k$ minste 
   elementene (ikke nødvendigvis sortert).
-  \item For å få dem sortert, bruk \texttt{heap sort} på den lille haugen.
 \end{itemize}
 
+\noindent
 \textbf{Tidskompleksitet:}
+Bygge haug: \(\mathcal O(k)\). Anta at vi må bytte roten med alle \(n-k\) 
+elementene vi finner og reparer ned: \(\mathcal O(\log k)\).
+Da får vi \(\mathcal O((n-k)\log k)\). Vi velger naturligvis \(k < n\) som gir:
 \[
-\mathcal{O}(k + (n-k) \cdot \log k + k \cdot \log k) = \mathcal{O}(n \log k)
+    \mathcal{O}(n \log k)
 \]
+Å ta ut elementene fra haugen å legge de sortert i en tabell tar også 
+\(\mathcal O(n\log k)\) som ikke endrer tidskompleksiteten.
 
 \section*{Oppgave 6}
 \subsection*{a)}
@@ -956,10 +971,11 @@ For å modifisere algoritmen slik at den gir en melding om hvorvidt en topologis
     \item Hvis det er noen noder igjen med in-degree større enn 0, betyr det at grafen inneholder en syklus, og en topologisk ordning er ikke mulig. Da skal algoritmen gi en melding om at det ikke finnes en topologisk ordning.
 \end{enumerate}
 
-\break
 \subsection*{e)}
 Ved bruk av Dijkstra har vi at den minimale avstanden fra 
-A til H er 9 \(\left(A\to B \to C \to D \to H\right)\)
+A til H er 9
+
+\[\left(A\to B \to C \to D \to H\right)\]
 
 
 
